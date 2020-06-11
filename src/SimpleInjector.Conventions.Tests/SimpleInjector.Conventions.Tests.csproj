@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AssemblyName>SimpleInjector.Conventions.Tests</AssemblyName>
+    <AssemblyOriginatorKeyFile>../fake.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <PackageId>SimpleInjector.Tests.Unit</PackageId>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <RuntimeIdentifiers>win10-x86</RuntimeIdentifiers>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <RootNamespace>SimpleInjector.Conventions.Tests</RootNamespace>
+  </PropertyGroup>
+
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">
+    <ProjectReference Include="..\PartialTrustTestRunner\PartialTrustTestRunner.csproj" />
+    <Reference Include="System.Linq.Expressions" />
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleInjector.Integration.AspNetCore.Mvc.Core\SimpleInjector.Integration.AspNetCore.Mvc.Core.csproj" />
+    <ProjectReference Include="..\SimpleInjector.Integration.AspNetCore.Mvc.ViewFeatures\SimpleInjector.Integration.AspNetCore.Mvc.ViewFeatures.csproj" />
+    <ProjectReference Include="..\SimpleInjector.Integration.AspNetCore.Mvc\SimpleInjector.Integration.AspNetCore.Mvc.csproj" />
+    <ProjectReference Include="..\SimpleInjector.Integration.AspNetCore\SimpleInjector.Integration.AspNetCore.csproj" />
+    <ProjectReference Include="..\SimpleInjector.Integration.GenericHost\SimpleInjector.Integration.GenericHost.csproj" />
+    <ProjectReference Include="..\SimpleInjector.Integration.ServiceCollection\SimpleInjector.Integration.ServiceCollection.csproj" />
+  </ItemGroup>
+
+
+</Project>
+ 
