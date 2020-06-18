@@ -492,10 +492,9 @@ namespace SimpleInjector
             return registration;
         }
 
-        private static Func<object> BuildSingletonInstanceCreator(
-            Type serviceType, IServiceProvider rootProvider)
+        private static Func<object> BuildSingletonInstanceCreator(Type serviceType, IServiceProvider rootProvider)
         {
-            return () => rootProvider.GetRequiredService(serviceType);
+            return () => GetRequiredService(rootProvider, serviceType);
         }
 
         private static Func<object> BuildScopedInstanceCreator(
@@ -524,8 +523,26 @@ namespace SimpleInjector
                         $"Error resolving the cross-wired {serviceType.ToFriendlyName()}. {ex.Message}", ex);
                 }
 
-                return current.GetRequiredService(serviceType);
+                return GetRequiredService(current, serviceType);
             };
+        }
+
+        private static object GetRequiredService(IServiceProvider provider, Type serviceType)
+        {
+            try
+            {
+                return provider.GetRequiredService(serviceType);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(
+                    $"Failed to resolve {serviceType.ToFriendlyName()}. {serviceType.ToFriendlyName()} is a " +
+                    $"cross-wired service, meaning that Simple Injector forwarded the request the framework's " +
+                    $"IServiceProvider in order to get an instance. The used {provider.GetType().FullName}, " +
+                    $"however, failed with the following message: \"{ex.Message}\". This error might indicate a " +
+                    $"misconfiguration of services in the framework's IServiceCollection.",
+                    ex);
+            }
         }
 
         private static ServiceDescriptor? FindServiceDescriptor(IServiceCollection services, Type serviceType)
