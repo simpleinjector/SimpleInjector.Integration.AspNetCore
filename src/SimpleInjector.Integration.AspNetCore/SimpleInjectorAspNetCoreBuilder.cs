@@ -7,7 +7,8 @@ namespace SimpleInjector.Integration.AspNetCore
     using SimpleInjector.Integration.ServiceCollection;
 
     /// <summary>
-    /// Builder object returned by <see cref="SimpleInjectorAddOptionsAspNetCoreExtensions.AddAspNetCore"/>
+    /// Builder object returned by
+    /// <see cref="SimpleInjectorAddOptionsAspNetCoreExtensions.AddAspNetCore(SimpleInjectorAddOptions)"/>
     /// that allows additional integration options to be applied.
     /// </summary>
     public sealed class SimpleInjectorAspNetCoreBuilder

@@ -11,6 +11,8 @@ namespace SimpleInjector.Integration.AspNetCore
 
     internal sealed class RequestScopingStartupFilter : IStartupFilter
     {
+        internal static readonly object HttpContextKey = new object();
+
         private readonly Container container;
 
         public RequestScopingStartupFilter(Container container)
@@ -30,13 +32,13 @@ namespace SimpleInjector.Integration.AspNetCore
 
         private void ConfigureRequestScoping(IApplicationBuilder builder)
         {
-            builder.Use(async (_, next) =>
+            builder.Use(async (httpContext, next) =>
             {
-                using (var scope = AsyncScopedLifestyle.BeginScope(this.container))
+                await using (var scope = AsyncScopedLifestyle.BeginScope(this.container))
                 {
-                    await next();
+                    scope.SetItem(HttpContextKey, httpContext);
 
-                    await scope.DisposeAsync();
+                    await next();
                 }
             });
         }

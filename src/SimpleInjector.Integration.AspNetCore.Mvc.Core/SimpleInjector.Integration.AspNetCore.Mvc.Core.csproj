@@ -29,7 +29,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.0.0" />
     <PackageReference Include="SimpleInjector" Version="5.0.0" />
-    <PackageReference Include="SimpleInjector.Integration.ServiceCollection" Version="5.0.0" />
+    <PackageReference Include="SimpleInjector.Integration.AspNetCore" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">

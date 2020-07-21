@@ -7,12 +7,12 @@ namespace SimpleInjector.Integration.AspNetCore
     using Microsoft.AspNetCore.Http;
     using SimpleInjector.Integration.ServiceCollection;
 
-    internal class AspNetCoreServiceProviderAccessor : IServiceProviderAccessor
+    internal sealed class OnePerRequestServiceProviderAccessor : IServiceProviderAccessor
     {
         private readonly IHttpContextAccessor accessor;
         private readonly IServiceProviderAccessor decoratee;
 
-        internal AspNetCoreServiceProviderAccessor(
+        internal OnePerRequestServiceProviderAccessor(
             IHttpContextAccessor accessor,
             IServiceProviderAccessor decoratee)
         {
