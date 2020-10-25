@@ -648,13 +648,15 @@ namespace SimpleInjector
             public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
         }
 
-        private sealed class ContainerDisposeWrapper : IDisposable
+        private sealed class ContainerDisposeWrapper : IDisposable, IAsyncDisposable
         {
             private readonly Container container;
 
             public ContainerDisposeWrapper(Container container) => this.container = container;
 
             public void Dispose() => this.container.Dispose();
+
+            public ValueTask DisposeAsync() => this.container.DisposeAsync();
         }
     }
 }
