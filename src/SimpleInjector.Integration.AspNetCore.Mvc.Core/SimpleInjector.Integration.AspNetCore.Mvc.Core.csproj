@@ -3,7 +3,7 @@
     <Description>Integration library for ASP.NET Core MVC core features for Simple Injector. This includes controller integration.</Description>
     <AssemblyTitle>Simple Injector ASP.NET Core MVC Core Integration</AssemblyTitle>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <VersionPrefix>5.0.0</VersionPrefix>
+    <VersionPrefix>5.1.1</VersionPrefix>
     <PackageReleaseNotes>https://github.com/simpleinjector/SimpleInjector.Integration.AspNetCore/releases/tag/5.0.0</PackageReleaseNotes>
     <AssemblyVersion>5.0.0.0</AssemblyVersion>
     <Authors>Simple Injector Contributors</Authors>
@@ -28,8 +28,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.0.0" />
-    <PackageReference Include="SimpleInjector" Version="5.0.0" />
-    <PackageReference Include="SimpleInjector.Integration.AspNetCore" Version="5.0.0" />
+    <PackageReference Include="SimpleInjector" Version="5.1.0" />
+    <PackageReference Include="SimpleInjector.Integration.AspNetCore" Version="5.1.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">

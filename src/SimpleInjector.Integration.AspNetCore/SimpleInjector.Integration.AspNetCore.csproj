@@ -3,7 +3,7 @@
     <Description>Integration library for ASP.NET Core for Simple Injector.</Description>
     <AssemblyTitle>Simple Injector ASP.NET Core Integration</AssemblyTitle>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <VersionPrefix>5.1.0</VersionPrefix>
+    <VersionPrefix>5.1.1</VersionPrefix>
     <PackageReleaseNotes>https://github.com/simpleinjector/SimpleInjector.Integration.AspNetCore/releases/tag/5.1.0</PackageReleaseNotes>
     <AssemblyVersion>5.0.0.0</AssemblyVersion>
     <Authors>Simple Injector Contributors</Authors>
@@ -32,9 +32,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.0" />
-    <PackageReference Include="SimpleInjector" Version="5.0.0" />
-    <PackageReference Include="SimpleInjector.Integration.ServiceCollection" Version="5.0.0" />
+    <PackageReference Include="SimpleInjector" Version="5.1.0" />
+    <PackageReference Include="SimpleInjector.Integration.ServiceCollection" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">
