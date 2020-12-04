@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>
       Integrates Simple Injector with applications that require the use of IServiceCollection for registration of framework components.
@@ -9,7 +9,7 @@
     <PackageReleaseNotes>https://github.com/simpleinjector/SimpleInjector.Integration.AspNetCore/releases/tag/5.0.0</PackageReleaseNotes>
     <AssemblyVersion>5.0.0.0</AssemblyVersion>
     <Authors>Simple Injector Contributors</Authors>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>SimpleInjector.Integration.ServiceCollection</AssemblyName>
@@ -36,7 +36,11 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
-    <PackageReference Include="SimpleInjector" Version="5.0.0" />
+    <PackageReference Include="SimpleInjector" Version="5.1.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.0" />	
   </ItemGroup>
 
   <ItemGroup>
