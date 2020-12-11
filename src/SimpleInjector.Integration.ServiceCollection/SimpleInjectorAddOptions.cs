@@ -68,10 +68,13 @@ namespace SimpleInjector.Integration.ServiceCollection
         public bool AutoCrossWireFrameworkComponents { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the value indicating whether the <see cref="Container"/> instance ued by the 
+        /// Gets or sets the value indicating whether the <see cref="Container"/> instance used by the 
         /// application should be disposed when the framework's <see cref="IServiceProvider"/> is disposed.
         /// The <see cref="IServiceProvider"/> is typically disposed of on application shutdown, which is also
-        /// the time to dispose the Container. The default value is <b>true</b>.
+        /// the time to dispose the Container. The default value is <b>true</b>. Please disable this option in case
+        /// asynchronous disposal is required. If there are Singleton registrations that implement IAsyncDisposable,
+        /// this property should be set to false and the Container should be disposed of manually by calling
+        /// <see cref="Container.DisposeContainerAsync"/>.
         /// </summary>
         /// <value>A boolean value.</value>
         public bool DisposeContainerWithServiceProvider { get; set; } = true;
@@ -83,7 +86,7 @@ namespace SimpleInjector.Integration.ServiceCollection
         /// is called, or when ASP.NET Core resolves its hosted services (whatever comes first).
         /// </summary>
         /// <value>The <see cref="IServiceProvider"/> instance.</value>
-        internal IServiceProvider ApplicationServices
+        public IServiceProvider ApplicationServices
         {
             get
             {

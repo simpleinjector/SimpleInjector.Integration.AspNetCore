@@ -29,6 +29,8 @@ namespace SimpleInjector
                 throw new ArgumentNullException(nameof(options));
             }
 
+            var services = options.Services;
+
             var registration = Lifestyle.Singleton.CreateRegistration<THostedService>(options.Container);
 
             // Let the built-in configuration system dispose this instance.
@@ -36,7 +38,7 @@ namespace SimpleInjector
 
             options.Container.AddRegistration<THostedService>(registration);
 
-            options.Services.AddSingleton<IHostedService>(_ =>
+            services.AddSingleton<IHostedService>(_ =>
             {
                 return options.Container.GetInstance<THostedService>();
             });

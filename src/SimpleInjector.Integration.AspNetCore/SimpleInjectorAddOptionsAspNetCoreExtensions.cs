@@ -75,6 +75,11 @@ namespace SimpleInjector
 
             services.UseSimpleInjectorAspNetRequestScoping(container);
 
+            if (options.DisposeContainerWithServiceProvider)
+            {
+                AddContainerDisposalOnShutdown(options, services);
+            }
+
             return new SimpleInjectorAspNetCoreBuilder(options);
         }
 
@@ -105,6 +110,45 @@ namespace SimpleInjector
             {
                 // This uses the default behavior.
                 return options.ServiceProviderAccessor;
+            }
+        }
+
+        private static void AddContainerDisposalOnShutdown(
+            SimpleInjectorAddOptions options, IServiceCollection services)
+        {
+            // DisposeContainerWithServiceProvider only support synchronous disposal, so we replace this with an
+            // ASP.NET Core-specific implementation that actually supports asynchronous disposal. This can be done
+            // with an IHostedService implementation.
+            services.AddSingleton<ContainerDisposeWrapper>();
+
+            options.Container.Options.ContainerLocking += (_, __) =>
+            {
+                // If there's no IServiceProvider, the property will throw, which is something we want to do at this
+                // point, not later on, when an unregistered type is resolved.
+                IServiceProvider provider = options.ApplicationServices;
+
+                // In order for the wrapper to get disposed of, it needs to be resolved once.
+                provider.GetRequiredService<ContainerDisposeWrapper>();
+            };
+
+            // By setting the property to false, we prevent the AddSimpleInjector method from adding its own shutdown
+            // behavior.
+            options.DisposeContainerWithServiceProvider = false;
+        }
+
+        private sealed class ContainerDisposeWrapper : IDisposable
+        {
+            private readonly Container container;
+
+            public ContainerDisposeWrapper(Container container) => this.container = container;
+
+            public void Dispose()
+            {
+                // Since we're running in the context of ASP.NET Core, a call to GetResult() will not result in a dead-
+                // lock. It isn't pretty, but it doesn't hurt either, as this is called just once at shutdown. As a
+                // matter of fact, Microsoft's Microsoft.Extensions.Hosting.Internal.Host class takes the exact same
+                // approach.
+                this.container.DisposeContainerAsync().GetAwaiter().GetResult();
             }
         }
     }

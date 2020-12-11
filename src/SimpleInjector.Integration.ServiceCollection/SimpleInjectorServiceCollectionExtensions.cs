@@ -438,8 +438,6 @@ namespace SimpleInjector
         private static void AddContainerDisposalOnShutdown(
             IServiceCollection services, SimpleInjectorAddOptions options)
         {
-            services.TryAddSingleton(options.Container);
-
             // This wrapper implements disposable and allows the container to be disposed of when
             // IServiceProvider is disposed of. Just like Simple Injector, however, MS.DI will only
             // dispose of instances that are registered using this overload (not using AddSingleton<T>(T)).
@@ -452,7 +450,8 @@ namespace SimpleInjector
                 IServiceProvider provider = options.ApplicationServices;
 
                 // In order for the wrapper to get disposed of, it needs to be resolved once.
-                provider.GetRequiredService<ContainerDisposeWrapper>();
+                var wrapper = provider.GetRequiredService<ContainerDisposeWrapper>();
+                wrapper.FrameworkProviderType = provider.GetType();
             };
         }
 
@@ -648,15 +647,45 @@ namespace SimpleInjector
             public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
         }
 
-        private sealed class ContainerDisposeWrapper : IDisposable, IAsyncDisposable
+        private sealed class ContainerDisposeWrapper : IDisposable
         {
             private readonly Container container;
 
             public ContainerDisposeWrapper(Container container) => this.container = container;
 
-            public void Dispose() => this.container.Dispose();
+            public Type FrameworkProviderType { get; internal set; } = typeof(IServiceProvider);
 
-            public ValueTask DisposeAsync() => this.container.DisposeAsync();
+            public void Dispose()
+            {
+                try
+                {
+                    // NOTE: We can't call container.DisposeContainerAsync().GetAwaiter().GetResult(), because we don't
+                    // know the context in which this library is running. If it's ASP.NET Core, it would be okay to
+                    // call GetResult(), but in case we're running in a UI framework, GetResult() might result in a
+                    // deadlock.
+                    this.container.Dispose();
+                }
+                catch (InvalidOperationException ex)
+                    when (ex.Message.Contains("IAsyncDisposable") && ex.Message.Contains("IDisposable"))
+                {
+                    // When we get here, Dispose complained that there was a Singleton registration that implements
+                    // IAsyncDisposable, while this is a synchronous Dispose call.
+                    throw new InvalidOperationException(
+                        $"Simple Injector was configured to be disposed of together with the application's " +
+                        $"{this.FrameworkProviderType.ToFriendlyName()}. This configuration is not suited for " +
+                        $"asynchronous disposal. The Simple Injector Container, however, contains a Singleton that " +
+                        $"implements IAsyncDisposable, which cannot be disposed of synchronously. To fix this " +
+                        $"problem, configure Simple Injector by setting {nameof(SimpleInjectorAddOptions)}." +
+                        $"{nameof(SimpleInjectorAddOptions.DisposeContainerWithServiceProvider)} to false and " +
+                        $"manually call 'await Container.{nameof(Container.DisposeContainerAsync)}()' at " +
+                        $"application shutdown. e.g.:\n" +
+                        $"services.{nameof(SimpleInjectorServiceCollectionExtensions.AddSimpleInjector)}(container, " +
+                        $"options => {{ " +
+                           $"options.{nameof(SimpleInjectorAddOptions.DisposeContainerWithServiceProvider)} = false;" +
+                        $" }}). {ex.Message}",
+                        ex);
+                }
+            }
         }
     }
 }

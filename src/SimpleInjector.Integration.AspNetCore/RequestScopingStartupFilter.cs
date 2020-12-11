@@ -34,11 +34,17 @@ namespace SimpleInjector.Integration.AspNetCore
         {
             builder.Use(async (httpContext, next) =>
             {
-                await using (var scope = AsyncScopedLifestyle.BeginScope(this.container))
+                Scope scope = AsyncScopedLifestyle.BeginScope(this.container);
+
+                try
                 {
                     scope.SetItem(HttpContextKey, httpContext);
 
                     await next();
+                }
+                finally
+                {
+                    await scope.DisposeScopeAsync();
                 }
             });
         }
