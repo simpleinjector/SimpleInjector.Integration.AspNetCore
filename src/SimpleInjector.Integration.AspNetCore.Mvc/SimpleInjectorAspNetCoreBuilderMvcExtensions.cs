@@ -134,7 +134,7 @@ namespace SimpleInjector
                         "system. This is most likely caused by a missing call to services.AddMvcCore() or " +
                         "services.AddMvc() as part of the ConfigureServices(IServiceCollection) method of " +
                         "the Startup class. A call to one of those methods will ensure the registration " +
-                        "of the {1}.",
+                        "of the {1}. Make sure you make this call -before- calling services.AddSimpleInjector().",
                         typeof(ApplicationPartManager).FullName,
                         typeof(ApplicationPartManager).Name));
             }
@@ -148,8 +148,7 @@ namespace SimpleInjector
                         "for Simple Injector's {1} method to get this instance from ASP.NET Core's " +
                         "IServiceCollection. This is most likely because {2} was overridden by you or a " +
                         "third-party library. Make sure that you use the AddSingleton overload that takes " +
-                        "in an existing instance—i.e. call " +
-                        "services.AddSingleton<{2}>(new {2}()).",
+                        "in an existing instance—i.e. call services.AddSingleton<{2}>(new {2}()).",
                         typeof(ApplicationPartManager).FullName,
                         methodName,
                         typeof(ApplicationPartManager).Name));
