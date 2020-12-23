@@ -23,7 +23,10 @@ namespace SimpleInjector
     {
         /// <summary>
         /// Registers all application's controllers in Simple Injector and instructs ASP.NET Core to let
-        /// Simple Injector create those controllers.
+        /// Simple Injector create those controllers. Those controllers will be registered using the
+        /// <see cref="Lifestyle.Transient"/> lifestyle, unless this is overridden using a custom
+        /// <see cref="ContainerOptions.DefaultLifestyle">DefaultLifestyle</see> or by overriding the default 
+        /// <see cref="ContainerOptions.LifestyleSelectionBehavior">LifestyleSelectionBehavior</see>.
         /// </summary>
         /// <param name="builder">The builder instance.</param>
         /// <returns>The supplied <paramref name="builder"/> instance.</returns>
@@ -32,16 +35,41 @@ namespace SimpleInjector
         {
             Requires.IsNotNull(builder, nameof(builder));
 
+            AddControllerActivationInternal(builder, lifestyle: null);
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Registers all application's controllers in Simple Injector and instructs ASP.NET Core to let
+        /// Simple Injector create those controllers. Those controllers will be registered using the supplied
+        /// <paramref name="lifestyle"/>.
+        /// </summary>
+        /// <param name="builder">The builder instance.</param>
+        /// <param name="lifestyle">The lifestyle used for registering the controllers.</param>
+        /// <returns>The supplied <paramref name="builder"/> instance.</returns>
+        public static SimpleInjectorAspNetCoreBuilder AddControllerActivation(
+            this SimpleInjectorAspNetCoreBuilder builder, Lifestyle lifestyle)
+        {
+            Requires.IsNotNull(builder, nameof(builder));
+            Requires.IsNotNull(lifestyle, nameof(lifestyle));
+
+            AddControllerActivationInternal(builder, lifestyle);
+
+            return builder;
+        }
+
+        private static void AddControllerActivationInternal(
+            SimpleInjectorAspNetCoreBuilder builder, Lifestyle? lifestyle)
+        {
             ApplicationPartManager manager = GetApplicationPartManager(
                 builder.Services,
                 nameof(AddControllerActivation));
 
-            RegisterMvcControllers(builder.Container, manager);
+            RegisterMvcControllers(builder.Container, manager, lifestyle);
 
             builder.Services.AddSingleton<IControllerActivator>(
                 new SimpleInjectorControllerActivator(builder.Container));
-
-            return builder;
         }
 
         private static ApplicationPartManager GetApplicationPartManager(
@@ -85,25 +113,27 @@ namespace SimpleInjector
             }
         }
 
-        private static void RegisterMvcControllers(Container container, ApplicationPartManager manager)
+        private static void RegisterMvcControllers(
+            Container container, ApplicationPartManager manager, Lifestyle? lifestyle)
         {
             var feature = new ControllerFeature();
             manager.PopulateFeature(feature);
             var controllerTypes = feature.Controllers.Select(t => t.AsType());
 
-            RegisterControllerTypes(container, controllerTypes);
+            RegisterControllerTypes(container, controllerTypes, lifestyle);
         }
 
-        private static void RegisterControllerTypes(this Container container, IEnumerable<Type> types)
+        private static void RegisterControllerTypes(
+            this Container container, IEnumerable<Type> types, Lifestyle? lifestyle)
         {
             foreach (Type type in types.ToArray())
             {
-                var registration = CreateConcreteRegistration(container, type);
+                var registration = CreateConcreteRegistration(container, type, lifestyle);
 
                 // Microsoft.AspNetCore.Mvc.Controller implements IDisposable (which is a design flaw).
                 // This will cause false positives in Simple Injector's diagnostic services, so we suppress
                 // this warning in case the registered type doesn't override Dispose from Controller.
-                if (ShouldSuppressDisposingControllers(type))
+                if (registration.Lifestyle == Lifestyle.Transient && ShouldSuppressDisposingControllers(type))
                 {
                     registration.SuppressDiagnosticWarning(
                         DiagnosticType.DisposableTransientComponent,
@@ -162,9 +192,9 @@ namespace SimpleInjector
             return null;
         }
 
-        private static Registration CreateConcreteRegistration(Container container, Type concreteType) =>
-            container.Options.LifestyleSelectionBehavior
-                .SelectLifestyle(concreteType)
+        private static Registration CreateConcreteRegistration(
+            Container container, Type concreteType, Lifestyle? lifestyle) =>
+            (lifestyle ?? container.Options.LifestyleSelectionBehavior.SelectLifestyle(concreteType))
                 .CreateRegistration(concreteType, container);
     }
 }
