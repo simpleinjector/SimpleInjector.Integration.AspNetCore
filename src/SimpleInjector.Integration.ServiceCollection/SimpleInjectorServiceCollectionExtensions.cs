@@ -73,11 +73,17 @@ namespace SimpleInjector
             // Set lifestyle before calling setupAction. Code in the delegate might depend on that.
             TrySetDefaultScopedLifestyle(container);
 
-            HookAspNetCoreHostHostedServiceServiceProviderInitialization(options);
-
             setupAction?.Invoke(options);
 
             RegisterServiceScope(options);
+
+            // Unfortunately, the addition of the IHostedService breaks Azure Functions. Azure Functions do no support
+            // IHostedService. See: https://stackoverflow.com/questions/59947132/. This is why we had to make this
+            // conditional.
+            if (options.EnableHostedServiceResolution)
+            {
+                HookAspNetCoreHostHostedServiceServiceProviderInitialization(options);
+            }
 
             if (options.AutoCrossWireFrameworkComponents)
             {
@@ -597,16 +603,18 @@ namespace SimpleInjector
         private static void HookAspNetCoreHostHostedServiceServiceProviderInitialization(
             SimpleInjectorAddOptions options)
         {
-            // ASP.NET Core 3's new Host class resolves hosted services much earlier in the pipeline. This
-            // registration ensures that the IServiceProvider is assigned before such resolve takes place,
-            // to ensure that that hosted service can be injected with cross-wired dependencies.
-            options.Services.AddSingleton<IHostedService>(provider =>
+            // ASP.NET Core 3's new Host class resolves hosted services much earlier in the pipeline. This registration
+            // ensures that the IServiceProvider is assigned before such resolve takes place, to ensure that that
+            // hosted service can be injected with cross-wired dependencies.
+            // We must ensure that this hosted service gets resolved by ASP.NET before any other hosted service is
+            // resolve; that's why we do the Insert(0).
+            options.Services.Insert(0, ServiceDescriptor.Singleton<IHostedService>(provider =>
             {
                 options.SetServiceProviderIfNull(provider);
 
                 // We can't return null here, so we return an empty implementation.
                 return new NullSimpleInjectorHostedService();
-            });
+            }));
         }
 
         private static void EnsureMethodOnlyCalledOnce(
