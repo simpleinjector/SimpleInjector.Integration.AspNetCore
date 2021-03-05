@@ -75,9 +75,11 @@ namespace SimpleInjector
 
             HookAspNetCoreHostHostedServiceServiceProviderInitialization(options);
 
-            setupAction?.Invoke(options);
-
+            // We must register the service scope before calling the setupAction. This allows setup code to replace
+            // it. See: #17.
             RegisterServiceScope(options);
+
+            setupAction?.Invoke(options);
 
             if (options.AutoCrossWireFrameworkComponents)
             {
