@@ -5,8 +5,8 @@
     </Description>
     <AssemblyTitle>Simple Injector IServiceCollection Integration</AssemblyTitle>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <VersionPrefix>5.2.0</VersionPrefix>
-    <PackageReleaseNotes>https://github.com/simpleinjector/SimpleInjector.Integration.AspNetCore/releases/tag/v5.2.0</PackageReleaseNotes>
+    <VersionPrefix>5.3.0</VersionPrefix>
+    <PackageReleaseNotes>https://github.com/simpleinjector/SimpleInjector.Integration.AspNetCore/releases/tag/v5.3.0</PackageReleaseNotes>
     <AssemblyVersion>5.0.0.0</AssemblyVersion>
     <Authors>Simple Injector Contributors</Authors>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
@@ -36,7 +36,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.0" />
-    <PackageReference Include="SimpleInjector" Version="5.2.0" />
+    <PackageReference Include="SimpleInjector" Version="5.3.0" />
   </ItemGroup>
 
   <ItemGroup>
