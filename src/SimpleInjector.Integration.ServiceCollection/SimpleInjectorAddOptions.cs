@@ -45,20 +45,8 @@ namespace SimpleInjector.Integration.ServiceCollection
         /// <exception cref="ArgumentNullException">Thrown when a null value is provided.</exception>
         public IServiceProviderAccessor ServiceProviderAccessor
         {
-            get
-            {
-                return this.serviceProviderAccessor;
-            }
-
-            set
-            {
-                if (value is null)
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
-                this.serviceProviderAccessor = value;
-            }
+            get => this.serviceProviderAccessor;
+            set => this.serviceProviderAccessor = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>
@@ -86,8 +74,20 @@ namespace SimpleInjector.Integration.ServiceCollection
         /// The default is <c>true</c>. Set this value to <b>false</b> when running in an environment that does not
         /// support hosted services, e.g. Azure Functions.
         /// </summary>
-        /// /// <value>A boolean value.</value>
+        /// <value>A boolean value.</value>
         public bool EnableHostedServiceResolution { get; set; } = true;
+
+        /// <summary>
+        /// Gets the framework's <see cref="IServiceScopeFactory"/> instance from the <see cref="ApplicationServices"/>.
+        /// It's value will be set when
+        /// <see cref="SimpleInjectorServiceCollectionExtensions.UseSimpleInjector(IServiceProvider, Container)">UseSimpleInjector</see>
+        /// is called, or when ASP.NET Core resolves its hosted services (whatever comes first).
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown when the property has been called while ita value hasn't
+        /// been set yet.</exception>
+        /// <value>An IServiceScopeFactory.</value>
+        public IServiceScopeFactory ServiceScopeFactory =>
+            this.serviceScopeFactory ??= this.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
 
         /// <summary>
         /// Gets the <see cref="IServiceProvider"/> instance that will be used by Simple Injector to resolve
@@ -95,23 +95,11 @@ namespace SimpleInjector.Integration.ServiceCollection
         /// <see cref="SimpleInjectorServiceCollectionExtensions.UseSimpleInjector(IServiceProvider, Container)">UseSimpleInjector</see>
         /// is called, or when ASP.NET Core resolves its hosted services (whatever comes first).
         /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown when the property has been called while ita value hasn't
+        /// been set yet.</exception>
         /// <value>The <see cref="IServiceProvider"/> instance.</value>
-        public IServiceProvider ApplicationServices
-        {
-            get
-            {
-                if (this.applicationServices is null)
-                {
-                    throw this.GetServiceProviderNotSetException();
-                }
-
-                return this.applicationServices;
-            }
-        }
-
-        internal IServiceScopeFactory ServiceScopeFactory =>
-            this.serviceScopeFactory
-                ?? (this.serviceScopeFactory = this.GetRequiredFrameworkService<IServiceScopeFactory>());
+        public IServiceProvider ApplicationServices =>
+            this.applicationServices ?? throw this.GetServiceProviderNotSetException();
 
         internal T GetRequiredFrameworkService<T>() => this.ApplicationServices.GetRequiredService<T>();
 
