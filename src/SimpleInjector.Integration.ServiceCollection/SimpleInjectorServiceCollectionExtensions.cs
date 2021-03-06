@@ -374,8 +374,13 @@ namespace SimpleInjector
 
         private static void RegisterServiceScope(SimpleInjectorAddOptions options)
         {
-            options.Container.Register(
-                () => options.ServiceScopeFactory.CreateScope(),
+            var container = options.Container;
+
+            container.Register<ServiceScopeProvider>(Lifestyle.Scoped);
+
+            container.Register(
+                () => container.GetInstance<ServiceScopeProvider>().ServiceScope
+                    ?? options.ServiceScopeFactory.CreateScope(),
                 Lifestyle.Scoped);
         }
 
