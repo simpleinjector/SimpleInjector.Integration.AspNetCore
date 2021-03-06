@@ -5,6 +5,7 @@ namespace SimpleInjector.Integration.ServiceCollection
 {
     using System;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using SimpleInjector.Advanced;
 
     /// <summary>
@@ -78,6 +79,15 @@ namespace SimpleInjector.Integration.ServiceCollection
         /// </summary>
         /// <value>A boolean value.</value>
         public bool DisposeContainerWithServiceProvider { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the value indicating whether the <see cref="Container"/> allows resolving
+        /// <see cref="IHostedService"/> implementations and injecting them with cross-wired framework dependencies.
+        /// The default is <c>true</c>. Set this value to <b>false</b> when running in an environment that does not
+        /// support hosted services, e.g. Azure Functions.
+        /// </summary>
+        /// /// <value>A boolean value.</value>
+        public bool EnableHostedServiceResolution { get; set; } = true;
 
         /// <summary>
         /// Gets the <see cref="IServiceProvider"/> instance that will be used by Simple Injector to resolve
