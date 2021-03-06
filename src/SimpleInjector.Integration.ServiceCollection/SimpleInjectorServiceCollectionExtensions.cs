@@ -73,13 +73,15 @@ namespace SimpleInjector
             // Set lifestyle before calling setupAction. Code in the delegate might depend on that.
             TrySetDefaultScopedLifestyle(container);
 
-            setupAction?.Invoke(options);
-
+            // #17: We must register the service scope before calling the setupAction. This allows setup code to
+            // replace it.
             RegisterServiceScope(options);
 
-            // Unfortunately, the addition of the IHostedService breaks Azure Functions. Azure Functions do no support
-            // IHostedService. See: https://stackoverflow.com/questions/59947132/. This is why we had to make this
-            // conditional.
+            setupAction?.Invoke(options);
+
+            // #15: Unfortunately, the addition of the IHostedService breaks Azure Functions. Azure Functions do no
+            // support IHostedService. See: https://stackoverflow.com/questions/59947132/. This is why we had to make
+            // this conditional. 
             if (options.EnableHostedServiceResolution)
             {
                 HookAspNetCoreHostHostedServiceServiceProviderInitialization(options);
