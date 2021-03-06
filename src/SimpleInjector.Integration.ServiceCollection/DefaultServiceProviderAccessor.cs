@@ -16,9 +16,9 @@ namespace SimpleInjector.Integration.ServiceCollection
             this.container = container;
         }
 
-        public IServiceProvider Current => this.CurentServiceScope.ServiceProvider;
+        public IServiceProvider Current => this.CurrentServiceScope.ServiceProvider;
 
-        private IServiceScope CurentServiceScope
+        private IServiceScope CurrentServiceScope
         {
             get
             {
