@@ -76,30 +76,20 @@ namespace SimpleInjector
         /// <param name="container">The container to resolve <typeparamref name="TMiddleware"/> from.</param>
         /// <returns>The supplied <see cref="IApplicationBuilder"/> instance.</returns>
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
+        /// <exception cref="ArgumentException">Thrown when the <typeparamref name="TMiddleware"/> does not
+        /// implement <see cref="IMiddleware"/> or not a concrete constructable
+        /// type.</exception>
         public static IApplicationBuilder UseMiddleware<TMiddleware>(
             this IApplicationBuilder app, Container container)
-            where TMiddleware : class, IMiddleware
         {
-            Requires.IsNotNull(app, nameof(app));
-            Requires.IsNotNull(container, nameof(container));
-
-            var lifestyle = container.Options.LifestyleSelectionBehavior.SelectLifestyle(typeof(TMiddleware));
-
-            // By creating an InstanceProducer up front, it will be known to the container, and will be part
-            // of the verification process of the container.
-            // Note that the middleware can't be registered in the container, because at this point the
-            // container might already be locked (which will happen when the new ASP.NET Core 3 Host class is
-            // used).
-            InstanceProducer<IMiddleware> producer =
-                lifestyle.CreateProducer<IMiddleware, TMiddleware>(container);
-
-            app.Use((c, next) =>
-            {
-                IMiddleware middleware = producer.GetInstance();
-                return middleware.InvokeAsync(c, _ => next());
-            });
-
-            return app;
+            // DESIGN: The "where TMiddleware : class, IMiddleware" generic type constraint was deliberately removed
+            // from this generic method. In case a user calls app.UserMiddleware<T>(container) on a T that didn't
+            // implement IMiddleware, C# would call one of ASP.NET Core's built-in extension method (i.e.
+            // UseMiddlewareExtensions.UseMiddleware<T>(IApplicationBuilder, object[])) instead of giving a compile
+            // error. This would result in a really confusing error message. By removing the constraint, C# will still
+            // prefer calling this method, in which case we can throw an expressive exception explaining that
+            // TMiddleware should implement IMiddleware. See #5
+            return UseMiddlewareInternal(app, typeof(TMiddleware), container, nameof(TMiddleware));
         }
 
         /// <summary>
@@ -114,30 +104,40 @@ namespace SimpleInjector
         /// <returns>The supplied <see cref="IApplicationBuilder"/> instance.</returns>
         /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
         /// <exception cref="ArgumentException">Thrown when the <paramref name="middlewareType"/> does not
-        /// derive from <see cref="IMiddleware"/>, is an open-generic type, or not a concrete constructable
-        /// type.</exception>
+        /// implement <see cref="IMiddleware"/>, is open-generic, or not a concrete constructable type.</exception>
         public static IApplicationBuilder UseMiddleware(
             this IApplicationBuilder app, Type middlewareType, Container container)
         {
+            return UseMiddlewareInternal(app, middlewareType, container, nameof(middlewareType));
+        }
+
+        private static IApplicationBuilder UseMiddlewareInternal(
+            IApplicationBuilder app, Type middlewareType, Container container, string middlewareTypeArgName)
+        {
             Requires.IsNotNull(app, nameof(app));
-            Requires.IsNotNull(middlewareType, nameof(middlewareType));
+            Requires.IsNotNull(middlewareType, middlewareTypeArgName);
             Requires.IsNotNull(container, nameof(container));
 
-            Requires.ServiceIsAssignableFromImplementation(
-                typeof(IMiddleware), middlewareType, nameof(middlewareType));
+            Requires.ServiceIsAssignableFromImplementation(typeof(IMiddleware), middlewareType, middlewareTypeArgName);
 
-            Requires.IsNotOpenGenericType(middlewareType, nameof(middlewareType));
+            Requires.IsNotOpenGenericType(middlewareType, middlewareTypeArgName);
 
             var lifestyle = container.Options.LifestyleSelectionBehavior.SelectLifestyle(middlewareType);
 
-            // By creating an InstanceProducer up front, it will be known to the container, and will be part
-            // of the verification process of the container.
-            // Note that the middleware can't be registered in the container, because at this point the
-            // container might already be locked (which will happen when the new ASP.NET Core 3 Host class is
-            // used).
-            InstanceProducer<IMiddleware> producer =
-                lifestyle.CreateProducer<IMiddleware>(middlewareType, container);
+            // By creating an InstanceProducer up front, it will be known to the container, and will be part of the
+            // verification process of the container (in case verification is done after a call to UseMiddleware).
+            // NOTE: the middleware can't be registered in the container using container.Register, because:
+            // 1. at this point the container might already be locked (which will happen when the new ASP.NET Core 3
+            //    Host class is used).
+            // 2. This method might be used in a map, e.g. app.Map("/api/abc", b => b.UseMiddleware<M>(container)).
+            //    When there are multiple mappings to the same middleware type M, the second call would fail.
+            InstanceProducer<IMiddleware> producer = lifestyle.CreateProducer<IMiddleware>(middlewareType, container);
 
+            // NOTE: CreateProducer will deduplicate the underlying Registration for middlewareType, which means its
+            // lifestyle will be respected in case there are multiple maps to the same type. But in case decorators are
+            // applied to IMiddleware, each map gets its own decorator (even if the decorator is registered as
+            // singleton). This isn't per se the best design, but keep this in mind when changing this; users might be
+            // depending on this behavior.
             app.Use((c, next) =>
             {
                 IMiddleware middleware = producer.GetInstance();
