@@ -13,23 +13,24 @@ namespace SimpleInjector.Integration.AspNetCore
     /// </summary>
     public sealed class SimpleInjectorAspNetCoreBuilder
     {
-        private readonly SimpleInjectorAddOptions options;
-
         internal SimpleInjectorAspNetCoreBuilder(SimpleInjectorAddOptions options)
         {
-            this.options = options;
+            this.Options = options;
         }
+
+        /// <summary>The options.</summary>
+        public SimpleInjectorAddOptions Options { get; }
 
         /// <summary>
         /// Gets the <see cref="IServiceCollection"/> that contains the collection of framework components.
         /// </summary>
         /// <value>The <see cref="IServiceCollection"/> instance.</value>
-        public IServiceCollection Services => this.options.Services;
+        public IServiceCollection Services => this.Options.Services;
 
         /// <summary>
         /// Gets the <see cref="Container"/> instance used by the application.
         /// </summary>
         /// <value>The <see cref="Container"/> instance.</value>
-        public Container Container => this.options.Container;
+        public Container Container => this.Options.Container;
     }
 }
