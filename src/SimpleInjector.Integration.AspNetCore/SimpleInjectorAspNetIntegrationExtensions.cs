@@ -89,7 +89,7 @@ namespace SimpleInjector
             // error. This would result in a really confusing error message. By removing the constraint, C# will still
             // prefer calling this method, in which case we can throw an expressive exception explaining that
             // TMiddleware should implement IMiddleware. See #5
-            return UseMiddlewareInternal(app, typeof(TMiddleware), container, nameof(TMiddleware));
+            return UseMiddlewareInternal(app, typeof(TMiddleware), container, "TMiddleware");
         }
 
         /// <summary>

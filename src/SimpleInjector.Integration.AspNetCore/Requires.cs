@@ -44,8 +44,7 @@ namespace SimpleInjector
             var implementOrInherit = service.GetTypeInfo().IsInterface ? "implement" : "inherit from";
 
             throw new ArgumentException(
-                $"The supplied type {implementation.FullName} does not {implementOrInherit} " +
-                $"from {service.FullName}.",
+                $"The supplied type {implementation.FullName} does not {implementOrInherit} {service.FullName}.",
                 paramName);
         }
     }
