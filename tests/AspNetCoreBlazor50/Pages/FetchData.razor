@@ -1,0 +1,88 @@
+﻿@inherits AspNetCoreBlazor50.BaseComponent
+@page "/fetchdata"
+
+@using AspNetCoreBlazor50.Data
+
+@inject IServiceProvider ServiceScope
+@inject NavigationManager NavigationManager1
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <button @onclick="NavigateFx">Navigate Fx!</button>
+    <button @onclick="NavigateSi">Navigate SI!</button>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private WeatherForecast[] forecasts;
+
+    [Dependency] WeatherForecastService ForecastService { get; set; }
+    [Dependency] SimpleInjector.Container Container { get; set; }
+    [Dependency] SomethingScoped SomethingScoped { get; set; }
+    [Dependency] NavigationManager NavigationManager2 { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+
+        if (!object.ReferenceEquals(
+            this.Container.GetInstance<Microsoft.Extensions.DependencyInjection.IServiceScope>(),
+            this.ServiceScope))
+        {
+            throw new InvalidOperationException("Scopes don't match");
+        }
+    }
+
+    void NavigateFx()
+    {
+        if (!object.ReferenceEquals(
+            this.Container.GetInstance<Microsoft.Extensions.DependencyInjection.IServiceScope>(),
+            this.ServiceScope))
+        {
+            throw new InvalidOperationException("Scopes don't match");
+        }
+
+        this.NavigationManager1.NavigateTo("", true);
+    }
+
+    void NavigateSi()
+    {
+        if (!object.ReferenceEquals(
+            this.Container.GetInstance<Microsoft.Extensions.DependencyInjection.IServiceScope>(),
+            this.ServiceScope))
+        {
+            throw new InvalidOperationException("Scopes don't match");
+        }
+
+        this.NavigationManager2.NavigateTo("", true);
+    }
+}
