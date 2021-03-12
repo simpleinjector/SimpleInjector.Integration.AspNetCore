@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCoreMvc50", "AspNetCoreMvc50\AspNetCoreMvc50.csproj", "{82BA2212-ABDF-49D4-A5AD-C4C61D722751}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreMvc50", "AspNetCoreMvc50\AspNetCoreMvc50.csproj", "{82BA2212-ABDF-49D4-A5AD-C4C61D722751}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCoreMvc21", "AspNetCoreMvc21\AspNetCoreMvc21.csproj", "{C5AB7335-92B1-4C3B-82A3-1014E22CB550}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreMvc21", "AspNetCoreMvc21\AspNetCoreMvc21.csproj", "{C5AB7335-92B1-4C3B-82A3-1014E22CB550}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCoreBlazor50", "AspNetCoreBlazor50\AspNetCoreBlazor50.csproj", "{233981F4-5BB4-4BC3-AC91-B4C83FC5C65D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreBlazor50", "AspNetCoreBlazor50\AspNetCoreBlazor50.csproj", "{233981F4-5BB4-4BC3-AC91-B4C83FC5C65D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctionsV3", "AzureFunctionsV3\AzureFunctionsV3.csproj", "{807EF4BB-D6FA-4FE2-972F-E88DF6E8556C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureFunctionsV3", "AzureFunctionsV3\AzureFunctionsV3.csproj", "{807EF4BB-D6FA-4FE2-972F-E88DF6E8556C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctionsV3-CQRS", "AzureFunctionsV3-CQRS\AzureFunctionsV3-CQRS.csproj", "{99924325-FA37-4A80-A5ED-5C6D4E3F3669}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{807EF4BB-D6FA-4FE2-972F-E88DF6E8556C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{807EF4BB-D6FA-4FE2-972F-E88DF6E8556C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{807EF4BB-D6FA-4FE2-972F-E88DF6E8556C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99924325-FA37-4A80-A5ED-5C6D4E3F3669}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99924325-FA37-4A80-A5ED-5C6D4E3F3669}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99924325-FA37-4A80-A5ED-5C6D4E3F3669}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99924325-FA37-4A80-A5ED-5C6D4E3F3669}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
