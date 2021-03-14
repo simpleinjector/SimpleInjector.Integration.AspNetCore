@@ -22,9 +22,9 @@ namespace SimpleInjector
     /// </summary>
     public static class SimpleInjectorServiceCollectionExtensions
     {
-        private static readonly object AddOptionsKey = new object();
-        private static readonly object AddLoggingKey = new object();
-        private static readonly object AddLocalizationKey = new object();
+        private static readonly object AddOptionsKey = new();
+        private static readonly object AddLoggingKey = new();
+        private static readonly object AddLocalizationKey = new();
 
         /// <summary>
         /// Sets up the basic configuration that allows Simple Injector to be used in frameworks that require
@@ -386,10 +386,16 @@ namespace SimpleInjector
 
             container.Register<ServiceScopeProvider>(Lifestyle.Scoped);
 
-            container.Register(
-                () => container.GetInstance<ServiceScopeProvider>().ServiceScope
-                    ?? options.ServiceScopeFactory.CreateScope(),
-                Lifestyle.Scoped);
+            var registration = Lifestyle.Scoped.CreateRegistration(
+                new ServiceScopeRetriever(options).GetServiceScope,
+                container);
+
+            // Suppress disposal, because an externally supplied IServiceScope (through
+            // ServiceScopeProvider.ServiceScope) should not be disposed. An internally created scope is registered
+            // for disposal.
+            registration.SuppressDisposal = true;
+
+            container.AddRegistration<IServiceScope>(registration);
         }
 
         private static SimpleInjectorAddOptions GetOptions(Container container)
@@ -700,6 +706,42 @@ namespace SimpleInjector
                         $" }}). {ex.Message}",
                         ex);
                 }
+            }
+        }
+
+        private sealed class ServiceScopeRetriever
+        {
+            private readonly Container container;
+            private readonly IServiceScopeFactory factory;
+
+            // Closure for a cached ServiceScopeProvider producer. IP.GetIntance is faster than Container.GetInstance.
+            private InstanceProducer? providerProducer = null;
+
+            public ServiceScopeRetriever(SimpleInjectorAddOptions options)
+            {
+                this.container = options.Container;
+                this.factory = options.ServiceScopeFactory;
+            }
+
+            public IServiceScope GetServiceScope() =>
+                this.GetExternallyProvidedServiceScope()
+                ?? this.CreateAndTrackServiceScope();
+
+            private IServiceScope? GetExternallyProvidedServiceScope()
+            {
+                this.providerProducer ??= this.container.GetRegistration<ServiceScopeProvider>(throwOnFailure: true)!;
+                var provider = (ServiceScopeProvider)providerProducer.GetInstance();
+                return provider.ServiceScope;
+            }
+
+            private IServiceScope CreateAndTrackServiceScope()
+            {
+                var serviceScope = this.factory.CreateScope();
+
+                // Ensure the created scope is disposed by Simple Injector
+                Lifestyle.Scoped.GetCurrentScope(this.container)!.RegisterForDisposal(serviceScope);
+
+                return serviceScope;
             }
         }
     }
