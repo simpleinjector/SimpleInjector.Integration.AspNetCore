@@ -454,7 +454,10 @@ namespace SimpleInjector
             // This wrapper implements disposable and allows the container to be disposed of when
             // IServiceProvider is disposed of. Just like Simple Injector, however, MS.DI will only
             // dispose of instances that are registered using this overload (not using AddSingleton<T>(T)).
-            services.AddSingleton<ContainerDisposeWrapper>();
+            // #32. By calling AddSingleton<T>(_ => new ...) we allow multiple wrappers to be registered, in case the
+            // user want to couple multiple container instances to one MS.DI instance. This isn't possible when calling
+            // AddSingleton<T>().
+            services.AddSingleton(_ => new ContainerDisposeWrapper(options.Container));
 
             options.Container.Options.ContainerLocking += (_, __) =>
             {
