@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31025.194
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreMvc50", "AspNetCoreMvc50\AspNetCoreMvc50.csproj", "{82BA2212-ABDF-49D4-A5AD-C4C61D722751}"
 EndProject
@@ -11,7 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreBlazor50", "AspNe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureFunctionsV3", "AzureFunctionsV3\AzureFunctionsV3.csproj", "{807EF4BB-D6FA-4FE2-972F-E88DF6E8556C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctionsV3-CQRS", "AzureFunctionsV3-CQRS\AzureFunctionsV3-CQRS.csproj", "{99924325-FA37-4A80-A5ED-5C6D4E3F3669}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureFunctionsV3-CQRS", "AzureFunctionsV3-CQRS\AzureFunctionsV3-CQRS.csproj", "{99924325-FA37-4A80-A5ED-5C6D4E3F3669}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreBlazor50PureDI", "AspNetCoreBlazor50PureDI\AspNetCoreBlazor50PureDI.csproj", "{C6558C43-150A-48BD-BD78-90E9B08AF2EE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreRazorPages50PureDI", "AspNetCoreRazorPages50PureDI\AspNetCoreRazorPages50PureDI.csproj", "{BF9207CC-46DC-4581-8450-C6339F49E8E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplicationFactoryConsole", "WebApplicationFactoryConsole\WebApplicationFactoryConsole.csproj", "{F52C7958-33BB-4CDD-B893-F39864937535}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +45,18 @@ Global
 		{99924325-FA37-4A80-A5ED-5C6D4E3F3669}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99924325-FA37-4A80-A5ED-5C6D4E3F3669}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99924325-FA37-4A80-A5ED-5C6D4E3F3669}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6558C43-150A-48BD-BD78-90E9B08AF2EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6558C43-150A-48BD-BD78-90E9B08AF2EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6558C43-150A-48BD-BD78-90E9B08AF2EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6558C43-150A-48BD-BD78-90E9B08AF2EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF9207CC-46DC-4581-8450-C6339F49E8E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF9207CC-46DC-4581-8450-C6339F49E8E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF9207CC-46DC-4581-8450-C6339F49E8E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF9207CC-46DC-4581-8450-C6339F49E8E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F52C7958-33BB-4CDD-B893-F39864937535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F52C7958-33BB-4CDD-B893-F39864937535}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F52C7958-33BB-4CDD-B893-F39864937535}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F52C7958-33BB-4CDD-B893-F39864937535}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
