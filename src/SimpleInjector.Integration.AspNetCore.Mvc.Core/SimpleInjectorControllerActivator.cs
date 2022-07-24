@@ -12,8 +12,7 @@ namespace SimpleInjector.Integration.AspNetCore.Mvc
     /// <summary>Controller activator for Simple Injector.</summary>
     public sealed class SimpleInjectorControllerActivator : IControllerActivator
     {
-        private readonly ConcurrentDictionary<Type, InstanceProducer?> controllerProducers =
-            new ConcurrentDictionary<Type, InstanceProducer?>();
+        private readonly ConcurrentDictionary<Type, InstanceProducer?> controllerProducers = new();
 
         private readonly Container container;
 
@@ -56,7 +55,13 @@ namespace SimpleInjector.Integration.AspNetCore.Mvc
                     $"https://docs.microsoft.com/en-us/aspnet/core/mvc/advanced/app-parts.");
             }
 
-            return producer.GetInstance();
+            var scope = context.HttpContext.GetScope();
+
+            // Scope will be null when the core integration's RequestScopingStartupFilter didn't run. This
+            // can happen if this activator is used without the application being configured using the
+            // SimpleInjectorAddOptions.AddAspNetCore() extension method. In that case we call .GetInstance()
+            // and expect the scoping to run using the default ambient scoping mechanism (non flowing).
+            return scope is null ? producer.GetInstance() : producer.GetInstance(scope);
         }
 
         /// <summary>Releases the controller.</summary>

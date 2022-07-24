@@ -24,9 +24,9 @@ namespace SimpleInjector.Integration.AspNetCore
 
         // Only the scope wrapping the request (the root scope) contains the HttpContext in its Items dictionary.
         // With nested scopes, this property returns null.
-        private HttpContext? RootScopeHttpContext =>
-            this.CurrentScope?.GetItem(RequestScopingStartupFilter.HttpContextKey) as HttpContext;
+        private HttpContext? RootScopeHttpContext => this.CurrentScope?.GetHttpContext();
 
+        // TODO: How to handle this?
         private Scope? CurrentScope => Lifestyle.Scoped.GetCurrentScope(this.container);
     }
 }

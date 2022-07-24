@@ -13,8 +13,7 @@ namespace SimpleInjector.Integration.AspNetCore.Mvc
     /// <summary>Tag Helper Activator for Simple Injector.</summary>
     public class SimpleInjectorTagHelperActivator : ITagHelperActivator
     {
-        private readonly ConcurrentDictionary<Type, InstanceProducer> tagHelperProducers =
-            new ConcurrentDictionary<Type, InstanceProducer>();
+        private readonly ConcurrentDictionary<Type, InstanceProducer> tagHelperProducers = new();
 
         private readonly Container container;
         private readonly Predicate<Type> tagHelperSelector;
@@ -41,13 +40,23 @@ namespace SimpleInjector.Integration.AspNetCore.Mvc
         /// <inheritdoc />
         public TTagHelper Create<TTagHelper>(ViewContext context) where TTagHelper : ITagHelper =>
             this.UseSimpleInjector(typeof(TTagHelper))
-                ? (TTagHelper)this.GetInstanceFromSimpleInjector(typeof(TTagHelper))
+                ? (TTagHelper)this.GetInstanceFromSimpleInjector(typeof(TTagHelper), context)
                 : this.activator.Create<TTagHelper>(context);
 
         private bool UseSimpleInjector(Type type) => this.tagHelperSelector.Invoke(type);
 
-        private object GetInstanceFromSimpleInjector(Type type) =>
-            this.tagHelperProducers.GetOrAdd(type, this.GetTagHelperProducer).GetInstance();
+        private object GetInstanceFromSimpleInjector(Type type, ViewContext context)
+        {
+            var scope = context.HttpContext.GetScope();
+
+            var producer = this.tagHelperProducers.GetOrAdd(type, this.GetTagHelperProducer);
+
+            // Scope will be null when the core integration's RequestScopingStartupFilter didn't run. This
+            // can happen if this activator is used without the application being configured using the
+            // SimpleInjectorAddOptions.AddAspNetCore() extension method. In that case we call .GetInstance()
+            // and expect the scoping to run using the default ambient scoping mechanism (non flowing).
+            return scope is null ? producer.GetInstance() : producer.GetInstance(scope);
+        }
 
         // Find the registration for the tag helper in the container
         // and fallback to creating one when no registration exists.
