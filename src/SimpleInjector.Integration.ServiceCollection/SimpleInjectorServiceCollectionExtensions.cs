@@ -22,9 +22,9 @@ namespace SimpleInjector
     /// </summary>
     public static class SimpleInjectorServiceCollectionExtensions
     {
-        private static readonly object AddOptionsKey = new object();
-        private static readonly object AddLoggingKey = new object();
-        private static readonly object AddLocalizationKey = new object();
+        private static readonly object AddOptionsKey = new();
+        private static readonly object AddLoggingKey = new();
+        private static readonly object AddLocalizationKey = new();
 
         /// <summary>
         /// Sets up the basic configuration that allows Simple Injector to be used in frameworks that require
@@ -457,7 +457,8 @@ namespace SimpleInjector
             // #32. By calling AddSingleton<T>(_ => new ...) we allow multiple wrappers to be registered, in case the
             // user want to couple multiple container instances to one MS.DI instance. This isn't possible when calling
             // AddSingleton<T>().
-            services.AddSingleton(_ => new ContainerDisposeWrapper(options.Container));
+            var wrapper = new ContainerDisposeWrapper(options.Container);
+            services.AddSingleton(_ => wrapper);
 
             options.Container.Options.ContainerLocking += (_, __) =>
             {
@@ -465,9 +466,11 @@ namespace SimpleInjector
                 // at this point, not later on, when an unregistered type is resolved.
                 IServiceProvider provider = options.ApplicationServices;
 
-                // In order for the wrapper to get disposed of, it needs to be resolved once.
-                var wrapper = provider.GetRequiredService<ContainerDisposeWrapper>();
-                wrapper.FrameworkProviderType = provider.GetType();
+                // In order for the wrappers to get disposed of, they needs to be resolved once.
+                foreach (var wrapper in provider.GetServices<ContainerDisposeWrapper>())
+                {
+                    wrapper.FrameworkProviderType = provider.GetType();
+                }
             };
         }
 

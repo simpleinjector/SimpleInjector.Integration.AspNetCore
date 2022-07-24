@@ -4,6 +4,7 @@
 namespace SimpleInjector
 {
     using System;
+    using System.Linq;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -116,10 +117,15 @@ namespace SimpleInjector
         private static void AddContainerDisposalOnShutdown(
             SimpleInjectorAddOptions options, IServiceCollection services)
         {
-            // DisposeContainerWithServiceProvider only support synchronous disposal, so we replace this with an
+            // The core implementation only support synchronous disposal, so we replace this with an
             // ASP.NET Core-specific implementation that actually supports asynchronous disposal. This can be done
             // with an IHostedService implementation.
-            services.AddSingleton<ContainerDisposeWrapper>();
+
+            // #32. By calling AddSingleton<T>(_ => new ...) we allow multiple wrappers to be registered, in case the
+            // user want to couple multiple container instances to one MS.DI instance. This isn't possible when calling
+            // AddSingleton<T>().
+            var wrapper = new ContainerDisposeWrapper(options.Container);
+            services.AddSingleton(_ => wrapper);
 
             options.Container.Options.ContainerLocking += (_, __) =>
             {
@@ -127,8 +133,8 @@ namespace SimpleInjector
                 // point, not later on, when an unregistered type is resolved.
                 IServiceProvider provider = options.ApplicationServices;
 
-                // In order for the wrapper to get disposed of, it needs to be resolved once.
-                provider.GetRequiredService<ContainerDisposeWrapper>();
+                // In order for the wrappers to get disposed of, they needs to be resolved once.
+                provider.GetServices<ContainerDisposeWrapper>().ToArray();
             };
 
             // By setting the property to false, we prevent the AddSimpleInjector method from adding its own shutdown
