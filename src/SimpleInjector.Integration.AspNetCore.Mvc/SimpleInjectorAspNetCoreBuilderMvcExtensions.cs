@@ -70,7 +70,7 @@ namespace SimpleInjector
             // fail because of the dependencies these tag helpers have. This means that OOTB tag helpers need
             // to remain created by the framework's DefaultTagHelperActivator, hence the selector predicate.
             Predicate<Type> selector = applicationTypeSelector ??
-                (type => !type.GetTypeInfo().Namespace.StartsWith("Microsoft")
+                (type => (!type.GetTypeInfo().Namespace?.StartsWith("Microsoft") ?? false)
                     && !type.GetTypeInfo().Name.Contains("__Generated__"));
 
             var manager = GetApplicationPartManager(builder.Services, nameof(AddTagHelperActivation));
@@ -82,7 +82,7 @@ namespace SimpleInjector
             builder.Services.AddSingleton<ITagHelperActivator>(p => new SimpleInjectorTagHelperActivator(
                 builder.Container,
                 selector,
-                (ITagHelperActivator)p.GetInstance(tagHelperDescriptor)));
+                (p.GetInstance(tagHelperDescriptor) as ITagHelperActivator)!));
 
             return builder;
         }
@@ -223,11 +223,21 @@ namespace SimpleInjector
             return descriptor;
         }
 
+#if NETSTANDARD2_0
         private static object GetInstance(this IServiceProvider provider, ServiceDescriptor descriptor) =>
             descriptor.ImplementationInstance != null
                 ? descriptor.ImplementationInstance
                 : descriptor.ImplementationType != null
                     ? ActivatorUtilities.GetServiceOrCreateInstance(provider, descriptor.ImplementationType)
                     : descriptor.ImplementationFactory(provider);
+#endif
+#if NET6_0_OR_GREATER
+        private static object GetInstance(this IServiceProvider provider, ServiceDescriptor descriptor) =>
+            descriptor.ImplementationInstance != null
+                ? descriptor.ImplementationInstance
+                : descriptor.ImplementationType != null
+                    ? ActivatorUtilities.GetServiceOrCreateInstance(provider, descriptor.ImplementationType)
+                    : descriptor.ImplementationFactory?.Invoke(provider)!;
+#endif
     }
 }

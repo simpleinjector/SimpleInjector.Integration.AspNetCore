@@ -18,7 +18,7 @@ namespace SimpleInjector.Integration.AspNetCore
         /// </summary>
         /// <param name="httpContext">The <see cref="HttpContext"/> to retrieve the <see cref="Scope"/> from.</param>
         /// <returns>The scope or null.</returns>
-        public static Scope? GetScope(this HttpContext httpContext) => (Scope)httpContext.Items[HttpContextKey];
+        public static Scope? GetScope(this HttpContext httpContext) => httpContext.Items[HttpContextKey] as Scope;
 
         internal static HttpContext? GetHttpContext(this Scope scope) => scope.GetItem(HttpContextKey) as HttpContext;
 

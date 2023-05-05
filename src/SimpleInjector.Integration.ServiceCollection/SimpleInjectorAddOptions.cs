@@ -101,7 +101,13 @@ namespace SimpleInjector.Integration.ServiceCollection
         public IServiceProvider ApplicationServices =>
             this.applicationServices ?? throw this.GetServiceProviderNotSetException();
 
+#if NETSTANDARD2_0
         internal T GetRequiredFrameworkService<T>() => this.ApplicationServices.GetRequiredService<T>();
+#endif
+
+#if NET6_0_OR_GREATER
+        internal T GetRequiredFrameworkService<T>() where T : notnull => this.ApplicationServices.GetRequiredService<T>();
+#endif
 
         internal void SetServiceProviderIfNull(IServiceProvider provider)
         {

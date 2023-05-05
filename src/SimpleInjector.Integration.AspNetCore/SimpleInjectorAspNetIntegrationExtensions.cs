@@ -38,7 +38,12 @@ namespace SimpleInjector
         /// <returns>A service object of type T or null if there is no such service.</returns>
         /// <exception cref="InvalidOperationException">Thrown when the method is called outside the
         /// context of a web request.</exception>
+#if NETSTANDARD2_0
         public static T GetRequestService<T>(this IApplicationBuilder builder)
+#endif
+#if NET6_0_OR_GREATER
+        public static T? GetRequestService<T>(this IApplicationBuilder builder)
+#endif
         {
             Requires.IsNotNull(builder, nameof(builder));
 
@@ -54,7 +59,13 @@ namespace SimpleInjector
         /// <returns>A service object of type T.</returns>
         /// <exception cref="InvalidOperationException">Thrown when the method is called outside the
         /// context of a web request, or when there is no service of type <typeparamref name="T"/>.</exception>
+#if NETSTANDARD2_0
         public static T GetRequiredRequestService<T>(this IApplicationBuilder builder)
+#endif
+#if NET6_0_OR_GREATER
+        public static T GetRequiredRequestService<T>(this IApplicationBuilder builder)
+            where T : notnull
+#endif
         {
             Requires.IsNotNull(builder, nameof(builder));
 
