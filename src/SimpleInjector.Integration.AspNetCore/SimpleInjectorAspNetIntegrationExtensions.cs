@@ -42,7 +42,7 @@ namespace SimpleInjector
         {
             Requires.IsNotNull(builder, nameof(builder));
 
-            return GetRequestServiceProvider(builder.GetApplicationServices(), typeof(T)).GetService<T>();
+            return GetRequestServiceProvider(builder.GetApplicationServices(), typeof(T)).GetService<T>()!;
         }
 
         /// <summary>
@@ -58,8 +58,10 @@ namespace SimpleInjector
         {
             Requires.IsNotNull(builder, nameof(builder));
 
+#pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint.
             return GetRequestServiceProvider(
                 builder.GetApplicationServices(), typeof(T)).GetRequiredService<T>();
+#pragma warning restore CS8714
         }
 
         // WARNING: Although most of the extension methods in this class can become obsolete, because of the

@@ -101,7 +101,9 @@ namespace SimpleInjector.Integration.ServiceCollection
         public IServiceProvider ApplicationServices =>
             this.applicationServices ?? throw this.GetServiceProviderNotSetException();
 
+#pragma warning disable CS8714 // Nullability of type argument doesn't match 'notnull' constraint.
         internal T GetRequiredFrameworkService<T>() => this.ApplicationServices.GetRequiredService<T>();
+#pragma warning restore CS8714
 
         internal void SetServiceProviderIfNull(IServiceProvider provider)
         {

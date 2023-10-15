@@ -3,11 +3,11 @@
     <Description>Integration library for ASP.NET Core MVC core features for Simple Injector. This includes controller integration.</Description>
     <AssemblyTitle>Simple Injector ASP.NET Core MVC Core Integration</AssemblyTitle>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <VersionPrefix>5.4.0</VersionPrefix>
+    <VersionPrefix>5.5.0</VersionPrefix>
     <PackageReleaseNotes>https://github.com/simpleinjector/SimpleInjector.Integration.AspNetCore/releases/tag/v5.3.0</PackageReleaseNotes>
     <AssemblyVersion>5.0.0.0</AssemblyVersion>
     <Authors>Simple Injector Contributors</Authors>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net6.0;net7.0</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>SimpleInjector.Integration.AspNetCore.Mvc.Core</AssemblyName>
@@ -27,8 +27,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.1" />
     <PackageReference Include="SimpleInjector" Version="5.4.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0' OR '$(TargetFramework)' == 'net7.0'">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">
@@ -43,7 +50,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SimpleInjector.Integration.AspNetCore\SimpleInjector.Integration.AspNetCore.csproj" />
   </ItemGroup>
-  
+
   <Target Name="PostcompileScript" AfterTargets="Build" Condition=" '$(IsCrossTargetingBuild)' != 'true' ">
     <Exec Command="dotnet pack --no-build --configuration $(Configuration)" />
   </Target>

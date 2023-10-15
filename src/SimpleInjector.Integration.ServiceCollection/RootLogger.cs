@@ -13,7 +13,7 @@ namespace SimpleInjector.Integration.ServiceCollection
         // This constructor needs to be public for Simple Injector to create this type.
         public RootLogger(ILoggerFactory factory) => this.logger = factory.CreateLogger(string.Empty);
 
-        public IDisposable BeginScope<TState>(TState state) => this.logger.BeginScope(state);
+        IDisposable ILogger.BeginScope<TState>(TState state) => this.logger.BeginScope(state)!;
 
         public bool IsEnabled(LogLevel logLevel) => this.logger.IsEnabled(logLevel);
 
@@ -21,8 +21,8 @@ namespace SimpleInjector.Integration.ServiceCollection
             LogLevel logLevel,
             EventId eventId,
             TState state,
-            Exception exception,
-            Func<TState, Exception, string> formatter) =>
+            Exception? exception,
+            Func<TState, Exception?, string> formatter) =>
             this.logger.Log(logLevel, eventId, state, exception, formatter);
     }
 }
