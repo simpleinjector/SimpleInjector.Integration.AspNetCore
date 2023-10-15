@@ -200,7 +200,7 @@ namespace SimpleInjector
         /// injected into components that are built by Simple Injector.
         /// </summary>
         /// <param name="options">The options.</param>
-        /// <param name="serviceType">The type of service object to ross-wire.</param>
+        /// <param name="serviceType">The type of service object to cross-wire.</param>
         /// <returns>The supplied <paramref name="options"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when one of the parameters is a null reference.
         /// </exception>
